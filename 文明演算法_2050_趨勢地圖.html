@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文明演算法 2050 ｜ AI 與機器人趨勢地圖</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#05060c; --bg2:#080b16; --panel:rgba(18,24,42,.55); --panel2:rgba(12,17,32,.7);
+  --line:rgba(120,160,255,.14); --line2:rgba(120,160,255,.28);
+  --txt:#e8edff; --muted:#93a0c4; --dim:#5e6a8c;
+  --cyan:#22e6ff; --blue:#3b82f6; --violet:#a855f7; --emerald:#34f5c5; --amber:#ffb23e; --rose:#ff5d7a;
+  --accent:var(--blue);
+  --glow:0 0 28px rgba(59,130,246,.45);
+  --opt:#34f5c5; --base:#3aa0ff; --con:#ffb23e;
+  --maxw:1180px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Noto Sans TC','Rajdhani',system-ui,sans-serif;
+  background:var(--bg); color:var(--txt); line-height:1.7; overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:''; position:fixed; inset:0; z-index:-3;
+  background:
+    radial-gradient(1100px 700px at 78% -8%, rgba(59,130,246,.20), transparent 60%),
+    radial-gradient(900px 640px at 8% 12%, rgba(168,85,247,.16), transparent 60%),
+    radial-gradient(1200px 800px at 50% 108%, rgba(34,230,255,.12), transparent 60%),
+    var(--bg);
+}
+body::after{
+  content:''; position:fixed; inset:0; z-index:-2; opacity:.5;
+  background-image:linear-gradient(rgba(120,160,255,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(120,160,255,.05) 1px,transparent 1px);
+  background-size:54px 54px;
+  -webkit-mask-image:radial-gradient(circle at 50% 30%,#000 0%,transparent 78%);
+  mask-image:radial-gradient(circle at 50% 30%,#000 0%,transparent 78%);
+}
+#bgfx{position:fixed;inset:0;z-index:-1;pointer-events:none}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+section{padding:84px 0;position:relative}
+h1,h2,h3,.num,.kicker{font-family:'Orbitron','Noto Sans TC',sans-serif}
+.kicker{font-family:'Rajdhani','Noto Sans TC';letter-spacing:.32em;text-transform:uppercase;
+  font-size:.74rem;color:var(--cyan);font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.kicker::before{content:'';width:34px;height:1px;background:linear-gradient(90deg,var(--cyan),transparent)}
+.sec-title{font-size:clamp(1.7rem,3.6vw,2.7rem);font-weight:900;line-height:1.18;letter-spacing:-.01em;margin-bottom:18px}
+.sec-title em{font-style:normal;background:linear-gradient(120deg,var(--cyan),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{color:var(--muted);font-size:1.05rem;max-width:760px}
+.gridline{height:1px;background:linear-gradient(90deg,transparent,var(--line2),transparent);margin:0}
+
+/* ============ NAV ============ */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:60;backdrop-filter:blur(14px);
+  background:linear-gradient(180deg,rgba(5,6,12,.92),rgba(5,6,12,.5));border-bottom:1px solid var(--line)}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:62px;max-width:1320px}
+.brand{display:flex;align-items:center;gap:11px;font-family:'Orbitron';font-weight:700;font-size:.96rem;letter-spacing:.04em}
+.brand .dot{width:11px;height:11px;border-radius:50%;background:var(--cyan);box-shadow:0 0 14px var(--cyan);animation:pulse 2.4s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.78)}}
+.navlinks{display:flex;gap:6px}
+.navlinks a{color:var(--muted);text-decoration:none;font-size:.82rem;padding:7px 12px;border-radius:8px;transition:.2s;font-weight:500}
+.navlinks a:hover{color:var(--txt);background:rgba(120,160,255,.1)}
+@media(max-width:920px){.navlinks{display:none}}
+
+/* ============ SCENARIO SWITCH ============ */
+.scenario-bar{position:fixed;z-index:55;top:62px;left:0;right:0;backdrop-filter:blur(12px);
+  background:rgba(8,11,22,.82);border-bottom:1px solid var(--line)}
+.scenario-bar .wrap{display:flex;align-items:center;justify-content:center;gap:16px;height:58px;flex-wrap:wrap;max-width:1320px}
+.scenario-bar .lbl{font-size:.72rem;letter-spacing:.2em;color:var(--dim);text-transform:uppercase;font-weight:700}
+.switch{display:flex;gap:6px;background:rgba(0,0,0,.35);padding:5px;border-radius:14px;border:1px solid var(--line)}
+.switch button{font-family:'Rajdhani','Noto Sans TC';font-weight:700;font-size:.92rem;letter-spacing:.02em;
+  color:var(--muted);background:transparent;border:0;padding:8px 20px;border-radius:10px;cursor:pointer;transition:.25s;display:flex;align-items:center;gap:8px}
+.switch button .ic{width:9px;height:9px;border-radius:50%;background:currentColor;box-shadow:0 0 10px currentColor}
+.switch button[data-s="optimistic"]{--c:var(--opt)}
+.switch button[data-s="base"]{--c:var(--base)}
+.switch button[data-s="conservative"]{--c:var(--con)}
+.switch button.active{color:#06121a;background:var(--c);box-shadow:0 0 22px -4px var(--c)}
+.switch button:not(.active):hover{color:var(--txt);background:rgba(120,160,255,.08)}
+@media(max-width:560px){.scenario-bar .lbl{display:none}.switch button{padding:8px 13px;font-size:.84rem}}
+
+/* ============ HERO ============ */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding-top:120px;position:relative}
+.hero .tag{font-family:'Rajdhani';letter-spacing:.42em;text-transform:uppercase;font-size:.82rem;color:var(--cyan);font-weight:700;margin-bottom:26px;
+  padding:8px 20px;border:1px solid var(--line2);border-radius:30px;background:rgba(34,230,255,.05)}
+.hero h1{font-size:clamp(2.6rem,8vw,6rem);font-weight:900;line-height:1;letter-spacing:-.02em;margin-bottom:8px}
+.hero h1 .l1{display:block;background:linear-gradient(180deg,#fff,#9fb8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero h1 .l2{display:block;font-size:.42em;letter-spacing:.5em;color:var(--cyan);font-weight:700;margin-top:18px;text-shadow:var(--glow)}
+.hero .sub{max-width:680px;color:var(--muted);font-size:1.12rem;margin:30px auto 0;line-height:1.8}
+.hero .meta{margin-top:40px;display:flex;gap:30px;flex-wrap:wrap;justify-content:center;color:var(--dim);font-size:.82rem;letter-spacing:.05em;font-family:'Rajdhani'}
+.hero .meta b{color:var(--txt);font-weight:700}
+.scroll-cue{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);color:var(--dim);font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:10px}
+.scroll-cue .mouse{width:22px;height:36px;border:1.5px solid var(--line2);border-radius:12px;position:relative}
+.scroll-cue .mouse::after{content:'';width:3px;height:7px;background:var(--cyan);border-radius:2px;position:absolute;top:6px;left:50%;transform:translateX(-50%);animation:scrolldot 1.8s infinite}
+@keyframes scrolldot{0%{opacity:0;top:6px}40%{opacity:1}80%{opacity:0;top:18px}}
+
+/* hero live stat ribbon */
+.ribbon{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-top:54px;width:100%;max-width:860px}
+.ribbon .cell{background:rgba(10,14,26,.7);padding:22px 16px;text-align:center}
+.ribbon .v{font-family:'Orbitron';font-size:1.7rem;font-weight:900;color:var(--txt);line-height:1}
+.ribbon .v small{font-size:.5em;color:var(--muted);font-weight:500}
+.ribbon .k{font-size:.74rem;color:var(--muted);margin-top:9px;letter-spacing:.03em}
+@media(max-width:680px){.ribbon{grid-template-columns:repeat(2,1fr)}}
+
+/* ============ CARDS ============ */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(8px);transition:.3s}
+.card:hover{border-color:var(--line2)}
+.glass{background:linear-gradient(180deg,rgba(20,26,46,.6),rgba(10,13,26,.55));border:1px solid var(--line);border-radius:20px}
+.cols{display:grid;gap:22px}
+.c2{grid-template-columns:1fr 1fr}.c3{grid-template-columns:repeat(3,1fr)}.c4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.c2,.c3,.c4{grid-template-columns:1fr}}
+
+/* KPI big cards */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+@media(max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.kpi{padding:26px 22px;border-radius:18px;position:relative;overflow:hidden;background:var(--panel);border:1px solid var(--line)}
+.kpi::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;background:var(--accent);opacity:.9}
+.kpi .k{font-size:.8rem;color:var(--muted);letter-spacing:.04em}
+.kpi .v{font-family:'Orbitron';font-size:2.5rem;font-weight:900;line-height:1.05;margin:10px 0 4px;transition:.4s;color:#fff}
+.kpi .v small{font-size:.4em;color:var(--muted);font-weight:600;letter-spacing:.02em}
+.kpi .d{font-size:.82rem;color:var(--dim)}
+.kpi .trend{display:inline-block;margin-top:10px;font-size:.74rem;font-weight:700;padding:3px 9px;border-radius:20px;background:rgba(52,245,197,.12);color:var(--emerald)}
+
+/* chart container */
+.chart-card{padding:24px}
+.chart-card h3{font-size:1.18rem;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:10px}
+.chart-card h3 .bar{width:4px;height:18px;background:var(--accent);border-radius:2px;box-shadow:0 0 10px var(--accent)}
+.chart-card .ch-sub{color:var(--dim);font-size:.82rem;margin-bottom:18px}
+.canvas-box{position:relative;height:340px}
+.canvas-box.tall{height:420px}
+
+/* timeline */
+.tl{position:relative;margin-top:40px;padding-left:0}
+.tl-track{position:absolute;left:140px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--cyan),var(--violet),var(--amber));opacity:.5}
+.tl-item{position:relative;display:grid;grid-template-columns:120px 1fr;gap:38px;padding:18px 0 30px}
+.tl-year{font-family:'Orbitron';font-weight:900;font-size:1.5rem;text-align:right;color:var(--cyan);position:relative}
+.tl-year .era{display:block;font-family:'Rajdhani';font-size:.66rem;letter-spacing:.18em;color:var(--dim);font-weight:600;margin-top:4px}
+.tl-item::before{content:'';position:absolute;left:133px;top:26px;width:16px;height:16px;border-radius:50%;background:var(--bg);border:2px solid var(--cyan);box-shadow:0 0 0 4px rgba(34,230,255,.12);z-index:2}
+.tl-body{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px 24px;transition:.3s}
+.tl-body:hover{border-color:var(--line2);transform:translateX(4px)}
+.tl-body h4{font-size:1.12rem;font-weight:700;margin-bottom:6px;font-family:'Noto Sans TC'}
+.tl-body p{color:var(--muted);font-size:.92rem}
+.tl-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.tl-tags span{font-size:.7rem;padding:3px 10px;border-radius:20px;background:rgba(120,160,255,.1);color:var(--cyan);border:1px solid var(--line);font-weight:600}
+@media(max-width:680px){
+  .tl-track{left:54px}.tl-item{grid-template-columns:48px 1fr;gap:18px}
+  .tl-year{font-size:1rem;text-align:left}.tl-item::before{left:47px;top:8px}
+}
+
+/* task division */
+.tri{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-top:14px}
+@media(max-width:900px){.tri{grid-template-columns:1fr}}
+.actor{padding:26px 22px;border-radius:18px;border:1px solid var(--line);position:relative;overflow:hidden}
+.actor.agent{background:linear-gradient(180deg,rgba(58,160,255,.1),rgba(10,13,26,.4))}
+.actor.robot{background:linear-gradient(180deg,rgba(168,85,247,.1),rgba(10,13,26,.4))}
+.actor.human{background:linear-gradient(180deg,rgba(52,245,197,.1),rgba(10,13,26,.4))}
+.actor .ico{font-size:1.9rem;margin-bottom:8px}
+.actor h4{font-size:1.2rem;font-weight:900;margin-bottom:2px;font-family:'Noto Sans TC'}
+.actor .role{font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;font-weight:700;margin-bottom:16px}
+.actor.agent .role{color:var(--blue)}.actor.robot .role{color:var(--violet)}.actor.human .role{color:var(--emerald)}
+.actor ul{list-style:none}
+.actor li{font-size:.9rem;color:var(--muted);padding:8px 0;border-top:1px solid var(--line);display:flex;gap:10px;align-items:flex-start}
+.actor li:first-child{border-top:0}
+.actor li::before{content:'▸';color:currentColor;opacity:.6;flex-shrink:0}
+.actor.agent li::before{color:var(--blue)}.actor.robot li::before{color:var(--violet)}.actor.human li::before{color:var(--emerald)}
+.actor .share{position:absolute;top:22px;right:22px;font-family:'Orbitron';font-weight:900;font-size:1.5rem}
+.actor.agent .share{color:var(--blue)}.actor.robot .share{color:var(--violet)}.actor.human .share{color:var(--emerald)}
+
+/* eco phases */
+.eco{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:30px;border:1px solid var(--line);border-radius:18px;overflow:hidden}
+@media(max-width:900px){.eco{grid-template-columns:1fr}}
+.eco-col{padding:30px 26px;border-right:1px solid var(--line);position:relative}
+.eco-col:last-child{border-right:0}
+.eco-col .ph{font-family:'Rajdhani';font-size:.74rem;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--cyan)}
+.eco-col h4{font-size:1.3rem;font-weight:900;margin:8px 0 4px;font-family:'Noto Sans TC'}
+.eco-col .yr{font-family:'Orbitron';color:var(--dim);font-size:.85rem;margin-bottom:16px}
+.eco-col p{font-size:.92rem;color:var(--muted);margin-bottom:14px}
+.eco-col ul{list-style:none;font-size:.86rem}
+.eco-col li{padding:6px 0 6px 18px;position:relative;color:var(--muted)}
+.eco-col li::before{content:'';position:absolute;left:0;top:14px;width:6px;height:6px;border-radius:50%;background:var(--cyan)}
+
+/* company value chain */
+.vchain{display:flex;flex-direction:column;gap:12px;margin-top:24px}
+.layer{display:grid;grid-template-columns:160px 1fr;gap:20px;align-items:center;padding:18px 22px;border-radius:14px;border:1px solid var(--line);background:var(--panel);transition:.3s}
+.layer:hover{border-color:var(--line2);transform:translateX(4px)}
+.layer .lname{font-weight:900;font-family:'Noto Sans TC'}
+.layer .lname small{display:block;font-family:'Rajdhani';font-size:.7rem;letter-spacing:.1em;color:var(--dim);font-weight:600;text-transform:uppercase;margin-top:3px}
+.layer .firms{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:.8rem;padding:5px 13px;border-radius:8px;background:rgba(120,160,255,.08);border:1px solid var(--line);font-weight:600;color:var(--txt);display:flex;align-items:center;gap:7px}
+.chip .mb{font-size:.68rem;color:var(--cyan);font-family:'Orbitron'}
+.layer.l1{border-left:3px solid var(--cyan)}.layer.l2{border-left:3px solid var(--blue)}
+.layer.l3{border-left:3px solid var(--violet)}.layer.l4{border-left:3px solid var(--amber)}
+@media(max-width:680px){.layer{grid-template-columns:1fr;gap:10px}}
+
+/* country table */
+.ctable{width:100%;border-collapse:collapse;margin-top:8px;font-size:.92rem}
+.ctable th{text-align:left;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);font-weight:700;padding:12px 14px;border-bottom:1px solid var(--line2)}
+.ctable td{padding:14px;border-bottom:1px solid var(--line);color:var(--muted)}
+.ctable tr:hover td{background:rgba(120,160,255,.04)}
+.ctable .flag{font-size:1.1rem;margin-right:8px}
+.ctable .nm{color:var(--txt);font-weight:700}
+.ctable .role{font-size:.78rem;color:var(--dim)}
+.barcell{display:flex;align-items:center;gap:10px}
+.minibar{flex:1;height:7px;border-radius:4px;background:rgba(120,160,255,.1);overflow:hidden;min-width:60px}
+.minibar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,var(--cyan),var(--blue))}
+.tier{font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:20px}
+.tier.t1{background:rgba(52,245,197,.14);color:var(--emerald)}
+.tier.t2{background:rgba(58,160,255,.14);color:var(--blue)}
+.tier.t3{background:rgba(255,178,62,.14);color:var(--amber)}
+
+/* sandbox */
+.sandbox{background:linear-gradient(160deg,rgba(20,26,50,.7),rgba(8,11,22,.8));border:1px solid var(--line2);border-radius:24px;padding:36px;margin-top:30px;position:relative;overflow:hidden}
+.sandbox::before{content:'';position:absolute;top:-60px;right:-60px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(34,230,255,.18),transparent 70%);pointer-events:none}
+.sb-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+@media(max-width:900px){.sb-grid{grid-template-columns:1fr;gap:30px}}
+.slider-row{margin-bottom:26px}
+.slider-row .top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.slider-row .top .name{font-weight:700;font-size:.96rem}
+.slider-row .top .val{font-family:'Orbitron';font-weight:900;font-size:1.25rem;color:var(--cyan)}
+.slider-row .hint{font-size:.76rem;color:var(--dim);margin-top:6px}
+input[type=range]{-webkit-appearance:none;width:100%;height:6px;border-radius:5px;
+  background:linear-gradient(90deg,var(--cyan) 0%,var(--blue) var(--p,50%),rgba(120,160,255,.15) var(--p,50%));outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;
+  background:#fff;border:3px solid var(--cyan);cursor:pointer;box-shadow:0 0 14px rgba(34,230,255,.7)}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--cyan);cursor:pointer}
+.sb-out{display:flex;flex-direction:column;justify-content:center}
+.sb-verdict{text-align:center;padding:22px;border-radius:16px;border:1px solid var(--line2);background:rgba(0,0,0,.25);margin-bottom:20px}
+.sb-verdict .vh{font-size:.74rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);font-weight:700}
+.sb-verdict .vn{font-family:'Orbitron';font-size:1.8rem;font-weight:900;margin:8px 0;line-height:1.1}
+.sb-verdict .vd{font-size:.86rem;color:var(--muted)}
+.sb-metrics{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sb-metric{padding:16px;border-radius:13px;background:rgba(10,14,26,.6);border:1px solid var(--line);text-align:center}
+.sb-metric .mv{font-family:'Orbitron';font-size:1.5rem;font-weight:900;color:#fff}
+.sb-metric .mk{font-size:.74rem;color:var(--muted);margin-top:4px}
+.sb-reset{margin-top:18px;background:transparent;border:1px solid var(--line2);color:var(--muted);padding:9px 18px;border-radius:10px;cursor:pointer;font-family:'Rajdhani';font-weight:700;letter-spacing:.05em;transition:.2s;font-size:.84rem}
+.sb-reset:hover{color:var(--txt);border-color:var(--cyan)}
+
+/* callout / quote */
+.quote{border-left:3px solid var(--cyan);padding:6px 0 6px 26px;margin:30px 0;font-size:1.25rem;line-height:1.6;color:var(--txt);font-weight:300}
+.quote cite{display:block;margin-top:12px;font-size:.86rem;color:var(--dim);font-style:normal;font-weight:600}
+.note{background:rgba(255,178,62,.06);border:1px solid rgba(255,178,62,.2);border-radius:14px;padding:18px 22px;font-size:.88rem;color:var(--muted);display:flex;gap:14px}
+.note .i{color:var(--amber);font-size:1.2rem;flex-shrink:0}
+
+/* footer */
+footer{border-top:1px solid var(--line);padding:54px 0 70px;margin-top:40px}
+.src{font-size:.8rem;color:var(--dim);line-height:2}
+.src a{color:var(--muted);text-decoration:none;border-bottom:1px dotted var(--line2)}
+.src h4{color:var(--muted);font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;font-weight:700}
+.disc{margin-top:30px;font-size:.78rem;color:var(--dim);max-width:840px;line-height:1.8}
+
+.reveal{opacity:0;transform:translateY(30px);transition:.8s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
+.badge-s{display:inline-flex;align-items:center;gap:7px;font-size:.76rem;font-weight:700;padding:5px 13px;border-radius:20px;border:1px solid var(--line2);color:var(--muted)}
+.badge-s .d{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+.section-head{margin-bottom:42px;max-width:820px}
+</style>
+</head>
+<body>
+<canvas id="bgfx"></canvas>
+
+<!-- NAV -->
+<div class="topbar"><div class="wrap">
+  <div class="brand"><span class="dot"></span>文明演算法 · CIVILIZATION ALGORITHM</div>
+  <nav class="navlinks">
+    <a href="#timeline">時間軸</a>
+    <a href="#coexist">人機共存</a>
+    <a href="#ecology">人類生態</a>
+    <a href="#firms">核心企業</a>
+    <a href="#nations">國家紅利</a>
+    <a href="#sandbox">推演沙盤</a>
+  </nav>
+</div></div>
+
+<!-- SCENARIO SWITCH -->
+<div class="scenario-bar"><div class="wrap">
+  <span class="lbl">情境推演 Scenario</span>
+  <div class="switch" id="switch">
+    <button data-s="optimistic"><span class="ic"></span>樂觀估計</button>
+    <button data-s="base" class="active"><span class="ic"></span>一般估計</button>
+    <button data-s="conservative"><span class="ic"></span>保守估計</button>
+  </div>
+</div></div>
+
+<!-- HERO -->
+<header class="hero wrap">
+  <div class="tag">World Pioneers · 世界先驅演講廳</div>
+  <h1>
+    <span class="l1">文明演算法 2050</span>
+    <span class="l2">THE HUMAN–MACHINE CONVERGENCE</span>
+  </h1>
+  <p class="sub">一份來自最前線首席科學家的趨勢地圖。從今日的前沿模型，到 2050 年人類與智慧機器全面共生的文明圖景——預測時間軸、工作分擔、生態演進，以及這波浪潮中將吃下紅利的企業與國家。</p>
+  <div class="ribbon" id="ribbon">
+    <div class="cell"><div class="v" data-bind="agiYear">2030</div><div class="k">通用人工智慧（AGI）抵達</div></div>
+    <div class="cell"><div class="v" data-bind="robots2050">10<small> 億台</small></div><div class="k">2050 全球人形機器人</div></div>
+    <div class="cell"><div class="v" data-bind="market2050">$5<small> 兆</small></div><div class="k">2050 機器人市場規模</div></div>
+    <div class="cell"><div class="v" data-bind="autoHours2050">40<small>%</small></div><div class="k">2050 自動化工時占比</div></div>
+  </div>
+  <div class="meta">
+    <span>視角｜<b>前沿首席科學家</b></span>
+    <span>縱深｜<b>2025 → 2050</b></span>
+    <span>模式｜<b>三情境互動推演</b></span>
+    <span>更新｜<b>2026 年 6 月</b></span>
+  </div>
+  <div class="scroll-cue"><span>向下展開</span><div class="mouse"></div></div>
+</header>
+
+<!-- PROLOGUE -->
+<section id="prologue"><div class="wrap reveal">
+  <div class="kicker">序言 · PROLOGUE</div>
+  <h2 class="sec-title">我們正站在<em>文明相變</em>的奇點之前</h2>
+  <p class="lead">過去三百年，人類用機械放大肌肉；過去三十年，用電腦放大記憶。如今，我們第一次造出能放大「認知」本身的機器。當智慧的邊際成本趨近於零，組織社會的底層演算法將被重寫。</p>
+  <div class="quote">「我比以往任何時候都更確信，我們已經非常接近強大的能力——就在未來二到三年內。」
+    <cite>— Dario Amodei，Anthropic 執行長，2026 達沃斯</cite></div>
+  <div class="cols c3" style="margin-top:28px">
+    <div class="card" style="padding:24px"><div class="badge-s"><span class="d" style="background:var(--cyan)"></span>認知層</div>
+      <p style="margin-top:14px;color:var(--muted);font-size:.92rem">2026 年 2 月，前沿模型首次「參與創造了自己」——AI 開始加速 AI 研究本身，遞迴自我改進的飛輪已經啟動。</p></div>
+    <div class="card" style="padding:24px"><div class="badge-s"><span class="d" style="background:var(--violet)"></span>實體層</div>
+      <p style="margin-top:14px;color:var(--muted);font-size:.92rem">人形機器人量產線同步點火。智慧第一次擁有了手與腳，能走進工廠、倉庫、田野與家庭。</p></div>
+    <div class="card" style="padding:24px"><div class="badge-s"><span class="d" style="background:var(--amber)"></span>文明層</div>
+      <p style="margin-top:14px;color:var(--muted);font-size:.92rem">當生產力與人口脫鉤，財富分配、工作意義與國家權力的演算法將被迫重新編譯。</p></div>
+  </div>
+</div></section>
+
+<div class="gridline"></div>
+
+<!-- KPI DASHBOARD -->
+<section id="dash"><div class="wrap reveal">
+  <div class="kicker">總覽儀表板 · 隨情境即時演算</div>
+  <h2 class="sec-title">當前情境：<em id="scenName">一般估計</em></h2>
+  <p class="lead" id="scenDesc">主流投行與研究機構的中位數路徑。技術持續突破但伴隨摩擦，社會在二十年內完成有序但深刻的重組。</p>
+  <div class="kpis" style="margin-top:36px">
+    <div class="kpi"><div class="k">AGI 抵達年份</div><div class="v" data-bind="agiYear">2030</div><div class="d">人類水準通用智慧</div><span class="trend" data-bind="agiTrend">50% 機率 · 本世代</span></div>
+    <div class="kpi"><div class="k">2050 機器人保有量</div><div class="v" data-bind="robots2050b">10 <small>億台</small></div><div class="d">全球在役人形機器人</div><span class="trend" data-bind="robTrend">≈ 全球勞動力 1/4</span></div>
+    <div class="kpi"><div class="k">全球 GDP 年增益</div><div class="v" data-bind="gdp">+$13 <small>兆</small></div><div class="d">2050 年 AI 貢獻增量</div><span class="trend" data-bind="gdpTrend">+12% 產出</span></div>
+    <div class="kpi"><div class="k">淨就業變化</div><div class="v" data-bind="jobs">+78 <small>百萬</small></div><div class="d">創造減去取代（至2050）</div><span class="trend" data-bind="jobTrend">結構性重組</span></div>
+  </div>
+</div></section>
+
+<!-- TIMELINE -->
+<section id="timeline"><div class="wrap">
+  <div class="section-head reveal">
+    <div class="kicker">第一部 · 預測時間軸</div>
+    <h2 class="sec-title">從<em>工具</em>到<em>夥伴</em>到<em>基礎設施</em>：2025–2050</h2>
+    <p class="lead">四個階段，描繪智慧如何從螢幕中的助手，演化為嵌入物理世界的文明基礎設施。下方年份會依您選擇的情境前後位移——樂觀情境壓縮時程，保守情境延展之。</p>
+  </div>
+  <div class="cols c2 reveal" style="margin-bottom:30px">
+    <div class="card chart-card"><h3><span class="bar"></span>人形機器人部署曲線</h3>
+      <div class="ch-sub">全球累計在役數量（億台）· 三情境 S 形擴散</div>
+      <div class="canvas-box"><canvas id="chCurve"></canvas></div></div>
+    <div class="card chart-card"><h3><span class="bar"></span>能力成熟度躍遷</h3>
+      <div class="ch-sub">AI 認知能力 vs. 機器人實體能力（相對 2025=10）</div>
+      <div class="canvas-box"><canvas id="chCap"></canvas></div></div>
+  </div>
+  <div class="tl reveal" id="timelineList">
+    <div class="tl-track"></div>
+    <!-- items injected -->
+  </div>
+</div></section>
+
+<div class="gridline"></div>
+
+<!-- COEXISTENCE -->
+<section id="coexist"><div class="wrap">
+  <div class="section-head reveal">
+    <div class="kicker">第二部 · 人機共存</div>
+    <h2 class="sec-title">三類行動者，<em>一張勞動分工表</em></h2>
+    <p class="lead">未來的工作不是「人 vs. 機器」，而是「人 × AI 代理人 × 實體機器人」的三方編隊。關鍵問題不是誰被取代，而是每一項任務該由誰來執行最有效率。下方占比為 2050 年總工時的承擔比例，隨情境變動。</p>
+  </div>
+  <div class="cols c2 reveal" style="margin-bottom:34px">
+    <div class="card chart-card"><h3><span class="bar"></span>工時承擔結構</h3>
+      <div class="ch-sub">2050 年全球總工時：人類 / AI 代理人 / 實體機器人</div>
+      <div class="canvas-box"><canvas id="chMix"></canvas></div></div>
+    <div class="card chart-card"><h3><span class="bar"></span>各產業任務自動化率</h3>
+      <div class="ch-sub">2050 年可被 AI＋機器人承接的任務比例</div>
+      <div class="canvas-box"><canvas id="chSector"></canvas></div></div>
+  </div>
+  <div class="tri reveal">
+    <div class="actor agent"><div class="share" data-bind="mixAgent">26%</div><div class="ico">🧠</div>
+      <h4>AI 代理人</h4><div class="role">Digital Agents · 認知勞動</div>
+      <ul>
+        <li>端到端軟體開發與維運</li>
+        <li>資料分析、預測與最佳化</li>
+        <li>客服、文書、行政自動化</li>
+        <li>初階法律、會計、稽核</li>
+        <li>醫療影像判讀與藥物探索</li>
+        <li>科學文獻綜述與假說生成</li>
+      </ul></div>
+    <div class="actor robot"><div class="share" data-bind="mixRobot">14%</div><div class="ico">🦾</div>
+      <h4>實體機器人</h4><div class="role">Embodied Robots · 物理勞動</div>
+      <ul>
+        <li>製造、組裝與品檢</li>
+        <li>倉儲、物流與最後一哩配送</li>
+        <li>營建、採礦與危險作業</li>
+        <li>農業耕作、採收與巡檢</li>
+        <li>清潔、維護與設施管理</li>
+        <li>照護輔助：搬運、餵食、復健</li>
+      </ul></div>
+    <div class="actor human"><div class="share" data-bind="mixHuman">60%</div><div class="ico">✺</div>
+      <h4>人類</h4><div class="role">Humans · 增強與主導</div>
+      <ul>
+        <li>策略、願景與跨域整合決策</li>
+        <li>原創創意與品味的最終裁定</li>
+        <li>高風險倫理與價值權衡</li>
+        <li>人際信任、談判與領導</li>
+        <li>照護中的情感連結與陪伴</li>
+        <li>提出「對的問題」與科學想像</li>
+      </ul></div>
+  </div>
+  <div class="note reveal" style="margin-top:26px"><span class="i">◆</span>
+    <div>麥肯錫（2025）測算：以現有技術，理論上可自動化美國當前 <b>57%</b> 的工作「時數」——其中 AI 代理人可承接 <b>44%</b>、實體機器人 <b>13%</b>。但「理論上限」≠「實際採用」。本報告的三情境，差別正在於這條從「能做」到「真做」的採用速度。</div>
+  </div>
+</div></section>
+
+<div class="gridline"></div>
+
+<!-- ECOLOGY -->
+<section id="ecology"><div class="wrap">
+  <div class="section-head reveal">
+    <div class="kicker">第三部 · 人類生態演進</div>
+    <h2 class="sec-title">當生產與人口脫鉤，<em>文明往何處生長</em></h2>
+    <p class="lead">智慧與勞動的豐裕，會把人類社會推向三個漸進的生態階段。每個階段都重新定義「工作」「財富」與「意義」。</p>
+  </div>
+  <div class="eco reveal">
+    <div class="eco-col">
+      <div class="ph">Phase Ⅰ · 增強紀元</div><h4>人機協作</h4><div class="yr">2025 – 2032</div>
+      <p>每個人都配備 AI 副駕。生產力暴增，但工作仍以人為中心，機器是放大器。</p>
+      <ul>
+        <li>「一人公司」與超級個體崛起</li>
+        <li>技能價值重估：提問力 &gt; 執行力</li>
+        <li>白領工時鬆動，四天工作週試驗</li>
+        <li>教育轉向：與 AI 協作的素養</li>
+      </ul>
+    </div>
+    <div class="eco-col">
+      <div class="ph">Phase Ⅱ · 轉型紀元</div><h4>豐裕與摩擦</h4><div class="yr">2032 – 2042</div>
+      <p>機器人進入物理世界，大量例行工作被承接。社會在「生產力紅利」與「分配焦慮」間擺盪。</p>
+      <ul>
+        <li>UBI／全民紅利進入主流政策辯論</li>
+        <li>商品與服務通縮，基本生活成本下降</li>
+        <li>人類向「關係型」與「創造型」工作遷移</li>
+        <li>身份與意義危機成為公共健康議題</li>
+      </ul>
+    </div>
+    <div class="eco-col">
+      <div class="ph">Phase Ⅲ · 共生紀元</div><h4>後稀缺社會</h4><div class="yr">2042 – 2050</div>
+      <p>智慧與基本物質趨近免費。文明的瓶頸從「生產」轉為「治理、能源與意義」。</p>
+      <ul>
+        <li>工作從「謀生」轉為「自我實現」的選項</li>
+        <li>財富錨定於能源、土地、運算與信任</li>
+        <li>文化、科學、探索成為增長新引擎</li>
+        <li>人類角色：價值的設定者與守門人</li>
+      </ul>
+    </div>
+  </div>
+  <div class="cols c2 reveal" style="margin-top:34px">
+    <div class="card chart-card"><h3><span class="bar"></span>勞動價值遷移</h3>
+      <div class="ch-sub">人類勞動力的價值重心，從體力 → 認知 → 關係／創造</div>
+      <div class="canvas-box"><canvas id="chShift"></canvas></div></div>
+    <div class="card chart-card"><h3><span class="bar"></span>豐裕指數 vs. 分配張力</h3>
+      <div class="ch-sub">物質豐裕度上升的同時，分配與意義張力如何演變</div>
+      <div class="canvas-box"><canvas id="chTension"></canvas></div></div>
+  </div>
+</div></section>
+
+<div class="gridline"></div>
+
+<!-- FIRMS -->
+<section id="firms"><div class="wrap">
+  <div class="section-head reveal">
+    <div class="kicker">第四部 · 核心企業紅利</div>
+    <h2 class="sec-title">紅利沿著<em>價值鏈四層</em>分配</h2>
+    <p class="lead">這波浪潮的價值，從底層的矽，一路堆疊到頂層的應用與實體。越靠近「瓶頸資源」（先進製程、算力、能源）的企業，議價權越強、紅利越厚。</p>
+  </div>
+  <div class="vchain reveal">
+    <div class="layer l1"><div class="lname">實體層<small>Embodiment</small></div>
+      <div class="firms">
+        <span class="chip">Tesla Optimus<span class="mb">&lt;$3萬/台</span></span>
+        <span class="chip">Figure AI<span class="mb">$25/工時</span></span>
+        <span class="chip">Unitree<span class="mb">5,500+台/年</span></span>
+        <span class="chip">波士頓動力</span><span class="chip">比亞迪</span><span class="chip">發那科 FANUC</span>
+      </div></div>
+    <div class="layer l2"><div class="lname">應用層<small>Application</small></div>
+      <div class="firms">
+        <span class="chip">OpenAI</span><span class="chip">Anthropic</span><span class="chip">Google DeepMind</span>
+        <span class="chip">Microsoft Copilot</span><span class="chip">Palantir</span><span class="chip">Salesforce</span>
+      </div></div>
+    <div class="layer l3"><div class="lname">模型／平台層<small>Models & Cloud</small></div>
+      <div class="firms">
+        <span class="chip">Microsoft Azure</span><span class="chip">Amazon AWS</span><span class="chip">Google Cloud</span>
+        <span class="chip">Meta</span><span class="chip">Oracle</span><span class="chip">xAI</span>
+      </div></div>
+    <div class="layer l4"><div class="lname">算力／矽層<small>Compute & Silicon</small></div>
+      <div class="firms">
+        <span class="chip">NVIDIA<span class="mb">$216B 營收</span></span>
+        <span class="chip">台積電 TSMC<span class="mb">90% 先進製程</span></span>
+        <span class="chip">Broadcom<span class="mb">$73B 在手</span></span>
+        <span class="chip">SK海力士</span><span class="chip">三星</span><span class="chip">ASML</span>
+      </div></div>
+  </div>
+  <div class="cols c2 reveal" style="margin-top:34px">
+    <div class="card chart-card"><h3><span class="bar"></span>算力層霸主：營收規模</h3>
+      <div class="ch-sub">2026 財年關鍵供應商營收與動能（十億美元）</div>
+      <div class="canvas-box"><canvas id="chFirms"></canvas></div></div>
+    <div class="card chart-card"><h3><span class="bar"></span>價值鏈紅利分配</h3>
+      <div class="ch-sub">各層級在 2030 年累計價值捕獲的相對占比</div>
+      <div class="canvas-box"><canvas id="chValue"></canvas></div></div>
+  </div>
+  <div class="note reveal" style="margin-top:26px;background:rgba(58,160,255,.06);border-color:rgba(58,160,255,.2)">
+    <span class="i" style="color:var(--blue)">◆</span>
+    <div>2026 年，四大雲端巨頭（Microsoft、Amazon、Meta、Alphabet）合計資本支出上看 <b>6,300 億美元</b>，全產業 AI 資本支出約 <b>7,250 億美元</b>。這條「算力軍備競賽」把 NVIDIA（資料中心營收 +68%）與台積電牢牢推上紅利金字塔頂端——誰掌握瓶頸，誰收稅。</div>
+  </div>
+</div></section>
+
+<div class="gridline"></div>
+
+<!-- NATIONS -->
+<section id="nations"><div class="wrap">
+  <div class="section-head reveal">
+    <div class="kicker">第五部 · 國家地緣紅利</div>
+    <h2 class="sec-title">三種國力，決定<em>誰主導下一個世代</em></h2>
+    <p class="lead">這場競賽的勝負手有三：<b>先進晶片</b>（設計＋製造）、<b>能源與電網</b>（餵養算力）、<b>資本與國家意志</b>（規模化部署）。沒有任何單一國家三者兼備——這正是 21 世紀地緣的新棋盤。</p>
+  </div>
+  <div class="cols c2 reveal" style="margin-bottom:34px">
+    <div class="card chart-card"><h3><span class="bar"></span>兩強對比：美國 vs. 中國</h3>
+      <div class="ch-sub">五大維度相對實力（雷達圖 · 滿分 100）</div>
+      <div class="canvas-box"><canvas id="chRadar"></canvas></div></div>
+    <div class="card chart-card"><h3><span class="bar"></span>國家紅利定位圖</h3>
+      <div class="ch-sub">橫軸＝供應鏈關鍵性／縱軸＝資本與能源動能／泡泡＝市場潛力</div>
+      <div class="canvas-box"><canvas id="chBubble"></canvas></div></div>
+  </div>
+  <div class="card reveal" style="padding:26px;overflow-x:auto">
+    <table class="ctable">
+      <thead><tr><th>經濟體</th><th>核心優勢</th><th>紅利層級</th><th>關鍵籌碼</th><th style="min-width:140px">綜合紅利指數</th></tr></thead>
+      <tbody>
+        <tr><td><span class="flag">🇺🇸</span><span class="nm">美國</span><div class="role">模型＋設計＋資本</div></td>
+          <td>掌控全球 ~70% AI 算力、最強前沿實驗室與晶片設計</td><td><span class="tier t1">第一梯隊</span></td>
+          <td>NVIDIA · OpenAI · 超大規模雲</td>
+          <td><div class="barcell"><span style="font-family:Orbitron;color:#fff">96</span><div class="minibar"><i style="width:96%"></i></div></div></td></tr>
+        <tr><td><span class="flag">🇨🇳</span><span class="nm">中國</span><div class="role">能源＋規模＋國家意志</div></td>
+          <td>發電量逾美國 2 倍，五年新增產能 6 倍於美；機器人供應鏈完整</td><td><span class="tier t1">第一梯隊</span></td>
+          <td>電網 · 兆元級國資 · 量產製造</td>
+          <td><div class="barcell"><span style="font-family:Orbitron;color:#fff">89</span><div class="minibar"><i style="width:89%"></i></div></div></td></tr>
+        <tr><td><span class="flag">🇹🇼</span><span class="nm">台灣</span><div class="role">先進製造心臟</div></td>
+          <td>台積電掌握 ~90% 最先進製程，AI 驅動下 GDP 估增 9.5%</td><td><span class="tier t1">第一梯隊</span></td>
+          <td>TSMC · 先進封裝 · 供應鏈</td>
+          <td><div class="barcell"><span style="font-family:Orbitron;color:#fff">85</span><div class="minibar"><i style="width:85%"></i></div></div></td></tr>
+        <tr><td><span class="flag">🇰🇷</span><span class="nm">南韓</span><div class="role">記憶體＋資本</div></td>
+          <td>HBM 記憶體要角，三星＋SK海力士＋資本支出逾 $1,250 億</td><td><span class="tier t2">第二梯隊</span></td>
+          <td>SK海力士 · 三星 · KOSPI 大漲</td>
+          <td><div class="barcell"><span style="font-family:Orbitron;color:#fff">78</span><div class="minibar"><i style="width:78%"></i></div></div></td></tr>
+        <tr><td><span class="flag">🇦🇪</span><span class="nm">阿聯／沙烏地</span><div class="role">主權資本＋能源</div></td>
+          <td>波灣主權基金近 $6 兆；沙國承諾 $1 兆、阿聯 2024 起投入 $1,480 億</td><td><span class="tier t2">第二梯隊</span></td>
+          <td>主權基金 · 廉價能源 · G42／Humain</td>
+          <td><div class="barcell"><span style="font-family:Orbitron;color:#fff">74</span><div class="minibar"><i style="width:74%"></i></div></div></td></tr>
+        <tr><td><span class="flag">🇯🇵</span><span class="nm">日本</span><div class="role">設備＋材料</div></td>
+          <td>半導體設備與材料關鍵供應，機器人本體技術深厚</td><td><span class="tier t2">第二梯隊</span></td>
+          <td>東京威力 · 發那科 · 材料</td>
+          <td><div class="barcell"><span style="font-family:Orbitron;color:#fff">70</span><div class="minibar"><i style="width:70%"></i></div></div></td></tr>
+        <tr><td><span class="flag">🇳🇱</span><span class="nm">荷蘭</span><div class="role">微影獨佔</div></td>
+          <td>ASML 獨家供應 EUV 微影機，扼守先進製程命脈</td><td><span class="tier t2">第二梯隊</span></td>
+          <td>ASML · 光學供應鏈</td>
+          <td><div class="barcell"><span style="font-family:Orbitron;color:#fff">68</span><div class="minibar"><i style="width:68%"></i></div></div></td></tr>
+        <tr><td><span class="flag">🇪🇺</span><span class="nm">歐盟</span><div class="role">規範＋市場</div></td>
+          <td>監理框架領先但前沿算力落後，面臨「規範者 vs. 製造者」抉擇</td><td><span class="tier t3">第三梯隊</span></td>
+          <td>AI 法案 · 單一市場 · 工業基底</td>
+          <td><div class="barcell"><span style="font-family:Orbitron;color:#fff">58</span><div class="minibar"><i style="width:58%"></i></div></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note reveal" style="margin-top:26px"><span class="i">◆</span>
+    <div><b>「電子鴻溝」是新石油。</b>美國領先晶片設計，但中國以發電量 2 倍以上的優勢，可能在「每瓦算力」的長跑中扳回一城。亞洲（台、韓、日、中）合計生產全球 72% 半導體、95% 最先進晶片——這條供應鏈，是任何國家都繞不開的咽喉。</div>
+  </div>
+</div></section>
+
+<div class="gridline"></div>
+
+<!-- SANDBOX -->
+<section id="sandbox"><div class="wrap">
+  <div class="section-head reveal">
+    <div class="kicker">推演沙盤 · YOUR SIMULATION</div>
+    <h2 class="sec-title">不只觀看——<em>親手推演您的 2050</em></h2>
+    <p class="lead">三情境只是起點。拖曳下方滑桿，依您對技術、社會與政策的想像，即時演算出屬於您的文明軌跡。這是給每一位決策者的思想實驗。</p>
+  </div>
+  <div class="sandbox reveal">
+    <div class="sb-grid">
+      <div class="sb-inputs">
+        <div class="slider-row">
+          <div class="top"><span class="name">AGI 抵達年份</span><span class="val" id="v-agi">2030</span></div>
+          <input type="range" id="s-agi" min="2026" max="2040" value="2030" step="1">
+          <div class="hint">越早抵達，遞迴自我改進的飛輪越快帶動全面變革。</div>
+        </div>
+        <div class="slider-row">
+          <div class="top"><span class="name">機器人普及速度</span><span class="val" id="v-rob">1.0×</span></div>
+          <input type="range" id="s-rob" min="40" max="200" value="100" step="5">
+          <div class="hint">量產學習曲線、成本下降與供應鏈擴張的綜合倍率。</div>
+        </div>
+        <div class="slider-row">
+          <div class="top"><span class="name">2050 自動化工時占比</span><span class="val" id="v-auto">40%</span></div>
+          <input type="range" id="s-auto" min="15" max="65" value="40" step="1">
+          <div class="hint">社會實際採用的程度——技術能做，不代表組織真做。</div>
+        </div>
+        <div class="slider-row">
+          <div class="top"><span class="name">分配政策力度</span><span class="val" id="v-pol">中等</span></div>
+          <input type="range" id="s-pol" min="0" max="100" value="50" step="5">
+          <div class="hint">UBI／全民紅利／再訓練投資的積極程度，決定張力走向。</div>
+        </div>
+        <button class="sb-reset" id="sbReset">↺ 重設為一般估計</button>
+      </div>
+      <div class="sb-out">
+        <div class="sb-verdict">
+          <div class="vh">推演結果 · 文明軌跡</div>
+          <div class="vn" id="o-verdict" style="color:var(--base)">有序重組</div>
+          <div class="vd" id="o-desc">技術紅利與社會調適大致同步，文明在二十年內完成深刻但可控的轉型。</div>
+        </div>
+        <div class="sb-metrics">
+          <div class="sb-metric"><div class="mv" id="o-market">$5.0兆</div><div class="mk">2050 機器人市場</div></div>
+          <div class="sb-metric"><div class="mv" id="o-gdp">+$13兆</div><div class="mk">全球 GDP 年增益</div></div>
+          <div class="sb-metric"><div class="mv" id="o-robots">10億</div><div class="mk">在役機器人</div></div>
+          <div class="sb-metric"><div class="mv" id="o-jobs">+78百萬</div><div class="mk">淨就業變化</div></div>
+        </div>
+        <div class="canvas-box" style="height:200px;margin-top:18px"><canvas id="chSand"></canvas></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- FOOTER -->
+<footer><div class="wrap reveal">
+  <div class="cols c2" style="align-items:start">
+    <div>
+      <div class="kicker">結語 · CODA</div>
+      <h2 class="sec-title" style="font-size:1.8rem">機器負責<em>「怎麼做」</em>，<br>人類負責<em>「為何而做」</em></h2>
+      <p class="lead" style="font-size:.98rem">2050 的世界不會由技術單獨決定，而由我們今日的選擇所編譯。豐裕已在路上；它將解放人類，還是撕裂社會，取決於各國領袖此刻在算力、能源、教育與分配上的演算法設計。智慧的曲線無法逆轉，但文明的方向仍握在我們手中。</p>
+      <div class="quote" style="font-size:1.05rem;margin-top:24px">「未來已經到來，只是分布得還不均勻。我們這一代的任務，是讓它分布得更公平。」</div>
+    </div>
+    <div class="src">
+      <h4>資料來源 · Primary Sources（2025–2026）</h4>
+      <p>
+        Morgan Stanley — <a href="https://www.morganstanley.com/insights/articles/humanoid-robot-market-5-trillion-by-2050">Humanoid Robot Market $5T by 2050</a><br>
+        Goldman Sachs — <a href="https://www.goldmansachs.com/insights/articles/the-global-market-for-robots-could-reach-38-billion-by-2035">Robot Market to $38B by 2035</a><br>
+        McKinsey — <a href="https://www.mckinsey.com/mgi/our-research/agents-robots-and-us-skill-partnerships-in-the-age-of-ai">Agents, Robots & Us</a><br>
+        Brookings — <a href="https://www.brookings.edu/articles/how-will-the-united-states-and-china-power-the-ai-race/">Powering the US–China AI Race</a><br>
+        IEA / BloombergNEF — Data-center electricity demand 2030<br>
+        NVIDIA FY2026 / TSMC / Broadcom — Investor reports<br>
+        80,000 Hours — <a href="https://80000hours.org/ai/guide/when-will-agi-arrive/">When Will AGI Arrive?</a><br>
+        Goldman Sachs / WEF — Future of Jobs & Automation 2030
+      </p>
+      <div class="disc">
+        本報告為情境推演之策略工具，非投資或政策建議。所有數值為整合主流投行、研究機構與前沿實驗室公開估計後的綜合中位數及其區間，旨在呈現可能性的「形狀」而非精確預測。實際軌跡將由技術突破、政策選擇與不可預見之事件共同決定。<br><br>
+        文明演算法 2050 · 為「世界先驅」演講廳製作 · 2026 年 6 月
+      </div>
+    </div>
+  </div>
+</div></footer>
+
+<script>
+/* ============================================================
+   DATA MODEL — three scenarios
+   ============================================================ */
+const DATA = {
+  optimistic:{
+    label:'樂觀估計', color:'#34f5c5',
+    desc:'技術突破快於預期，社會調適順暢。遞迴自我改進的 AI 與廉價機器人共同點燃一場「豐裕大爆發」，文明在十餘年內躍入後稀缺曙光。',
+    agiYear:2027, agiTrend:'極可能 · 本世代初',
+    robots2050:15, robots2050b:'15 億台', robTrend:'≈ 全球勞動力 40%',
+    market2050:7, gdp:22, gdpTrend:'+18% 產出', jobs:130, jobTrend:'新產業大爆發',
+    autoHours2050:55,
+    mix:{human:45, agent:33, robot:22},
+    curveL:1.55, curveT0:2040, curveK:.46,
+    capAI:[10,22,40,68,92,100], capRobot:[10,16,30,55,82,96],
+    sectors:[88,82,80,72,55,50,62,78,70,68], // 製造,物流,軟體,金融法律,醫療,教育,創意,農業,營建,科研
+    radar:{us:[97,72,96,90,88], cn:[82,99,72,80,86]},
+    shiftHuman:[60,48,34,24], // physical labor value share path (decline)
+    valueChain:[42,20,16,22], // silicon, model, app, embody
+    verdict:'豐裕大躍進', vColor:'#34f5c5',
+    vDesc:'技術紅利遠超社會摩擦，人類提前進入以創造與探索為核心的後稀缺生態。'
+  },
+  base:{
+    label:'一般估計', color:'#3aa0ff',
+    desc:'主流投行與研究機構的中位數路徑。技術持續突破但伴隨摩擦，社會在二十年內完成有序但深刻的重組。',
+    agiYear:2030, agiTrend:'50% 機率 · 本世代',
+    robots2050:10, robots2050b:'10 億台', robTrend:'≈ 全球勞動力 1/4',
+    market2050:5, gdp:13, gdpTrend:'+12% 產出', jobs:78, jobTrend:'結構性重組',
+    autoHours2050:40,
+    mix:{human:60, agent:26, robot:14},
+    curveL:1.05, curveT0:2044, curveK:.40,
+    capAI:[10,18,32,52,76,92], capRobot:[10,14,24,42,64,84],
+    sectors:[78,70,72,58,42,38,48,66,56,58],
+    radar:{us:[96,68,94,86,82], cn:[78,96,64,72,80]},
+    shiftHuman:[60,52,42,34],
+    valueChain:[38,22,18,22],
+    verdict:'有序重組', vColor:'#3aa0ff',
+    vDesc:'技術紅利與社會調適大致同步，文明在二十年內完成深刻但可控的轉型。'
+  },
+  conservative:{
+    label:'保守估計', color:'#ffb23e',
+    desc:'技術遭遇瓶頸、監理趨嚴、採用緩慢。變革真實但漸進，社會有更多時間調適，紅利也更集中於少數掌握瓶頸資源者。',
+    agiYear:2034, agiTrend:'本世代後段 · 不確定',
+    robots2050:4.5, robots2050b:'4.5 億台', robTrend:'≈ 全球勞動力 12%',
+    market2050:2.5, gdp:6, gdpTrend:'+6% 產出', jobs:25, jobTrend:'緩慢遷移',
+    autoHours2050:26,
+    mix:{human:74, agent:18, robot:8},
+    curveL:.48, curveT0:2047, curveK:.34,
+    capAI:[10,15,24,38,56,72], capRobot:[10,12,18,28,42,58],
+    sectors:[62,54,58,42,28,24,34,50,40,46],
+    radar:{us:[94,64,90,82,78], cn:[72,92,56,64,74]},
+    shiftHuman:[60,55,48,42],
+    valueChain:[34,24,20,22],
+    verdict:'漸進演化', vColor:'#ffb23e',
+    vDesc:'摩擦與瓶頸拉長時程，變革溫和而集中，社會穩定但不平等風險升高。'
+  }
+};
+const YEARS=[2025,2030,2035,2040,2045,2050];
+let current='base';
+const charts={};
+const fmt=n=>{const r=Math.round(n*10)/10;return Number.isInteger(r)?r:r.toFixed(1);};
+
+/* logistic curve generator */
+function logistic(L,t0,k){return YEARS.map(y=>{const v=L/(1+Math.exp(-k*(y-t0)));return Math.max(0,Math.round(v*100)/100);});}
+
+/* ============================================================
+   CHART THEME
+   ============================================================ */
+Chart.defaults.color='#93a0c4';
+Chart.defaults.font.family="'Rajdhani','Noto Sans TC',sans-serif";
+Chart.defaults.font.size=12;
+const grid={color:'rgba(120,160,255,.08)'};
+const gridX={color:'rgba(120,160,255,.05)'};
+function grad(ctx,c1,c2){const g=ctx.createLinearGradient(0,0,0,320);g.addColorStop(0,c1);g.addColorStop(1,c2);return g;}
+
+/* ============================================================
+   BUILD CHARTS
+   ============================================================ */
+function buildCharts(){
+  const d=DATA[current];
+
+  // robot deployment curve (3 scenarios overlaid, active highlighted)
+  charts.curve=new Chart(document.getElementById('chCurve'),{
+    type:'line',
+    data:{labels:YEARS,datasets:[
+      {label:'樂觀',data:logistic(DATA.optimistic.curveL,DATA.optimistic.curveT0,DATA.optimistic.curveK),borderColor:'#34f5c5',backgroundColor:'transparent',borderWidth:2,tension:.4,pointRadius:0},
+      {label:'一般',data:logistic(DATA.base.curveL,DATA.base.curveT0,DATA.base.curveK),borderColor:'#3aa0ff',backgroundColor:'transparent',borderWidth:2,tension:.4,pointRadius:0},
+      {label:'保守',data:logistic(DATA.conservative.curveL,DATA.conservative.curveT0,DATA.conservative.curveK),borderColor:'#ffb23e',backgroundColor:'transparent',borderWidth:2,tension:.4,pointRadius:0}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'top',labels:{boxWidth:10,boxHeight:10,usePointStyle:true,padding:16}},
+        tooltip:{callbacks:{label:c=>` ${c.dataset.label}：${c.parsed.y} 億台`}}},
+      scales:{y:{grid,title:{display:true,text:'億台',color:'#5e6a8c'},ticks:{callback:v=>v}},x:{grid:gridX}}}
+  });
+
+  // capability leap (AI vs robot) for active scenario, area
+  const ctxCap=document.getElementById('chCap').getContext('2d');
+  charts.cap=new Chart(ctxCap,{
+    type:'line',
+    data:{labels:YEARS,datasets:[
+      {label:'AI 認知能力',data:d.capAI,borderColor:'#22e6ff',backgroundColor:grad(ctxCap,'rgba(34,230,255,.35)','rgba(34,230,255,0)'),borderWidth:2.5,fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#22e6ff'},
+      {label:'機器人實體能力',data:d.capRobot,borderColor:'#a855f7',backgroundColor:grad(ctxCap,'rgba(168,85,247,.3)','rgba(168,85,247,0)'),borderWidth:2.5,fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#a855f7'}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'top',labels:{boxWidth:10,usePointStyle:true,padding:16}}},
+      scales:{y:{grid,min:0,max:105,title:{display:true,text:'相對能力指數',color:'#5e6a8c'}},x:{grid:gridX}}}
+  });
+
+  // work mix doughnut
+  charts.mix=new Chart(document.getElementById('chMix'),{
+    type:'doughnut',
+    data:{labels:['人類','AI 代理人','實體機器人'],
+      datasets:[{data:[d.mix.human,d.mix.agent,d.mix.robot],
+        backgroundColor:['#34f5c5','#3aa0ff','#a855f7'],borderColor:'#0a0e1a',borderWidth:3,hoverOffset:8}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'62%',
+      plugins:{legend:{position:'right',labels:{boxWidth:12,padding:18,usePointStyle:true}},
+        tooltip:{callbacks:{label:c=>` ${c.label}：${c.parsed}% 工時`}}}}
+  });
+
+  // sectors horizontal bar
+  charts.sector=new Chart(document.getElementById('chSector'),{
+    type:'bar',
+    data:{labels:['製造','物流倉儲','軟體／IT','金融法律','醫療照護','教育','創意媒體','農業','營建','科研'],
+      datasets:[{data:d.sectors,backgroundColor:d.sectors.map(v=>v>70?'#22e6ff':v>50?'#3aa0ff':'#7c6cf0'),borderRadius:5,barThickness:14}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` 自動化率 ${c.parsed.x}%`}}},
+      scales:{x:{grid,max:100,ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}}}
+  });
+
+  // labor value shift
+  const ctxSh=document.getElementById('chShift').getContext('2d');
+  charts.shift=new Chart(ctxSh,{
+    type:'line',
+    data:{labels:['2025','2035','2045','2050'],datasets:[
+      {label:'體力勞動價值',data:d.shiftHuman,borderColor:'#ffb23e',backgroundColor:'transparent',borderWidth:2.5,tension:.4,pointRadius:3},
+      {label:'認知勞動價值',data:d.shiftHuman.map((v,i)=>[55,62,58,50][i]),borderColor:'#3aa0ff',backgroundColor:'transparent',borderWidth:2.5,tension:.4,pointRadius:3},
+      {label:'關係／創造價值',data:[40,55,72,86],borderColor:'#34f5c5',backgroundColor:grad(ctxSh,'rgba(52,245,197,.25)','rgba(52,245,197,0)'),borderWidth:2.5,fill:true,tension:.4,pointRadius:3}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'top',labels:{boxWidth:10,usePointStyle:true,padding:14}}},
+      scales:{y:{grid,min:0,max:100,title:{display:true,text:'相對價值',color:'#5e6a8c'}},x:{grid:gridX}}}
+  });
+
+  // abundance vs tension
+  const ctxT=document.getElementById('chTension').getContext('2d');
+  const aMul=d.autoHours2050/40, tBase=[20,38,55,60];
+  charts.tension=new Chart(ctxT,{
+    type:'line',
+    data:{labels:['2025','2032','2042','2050'],datasets:[
+      {label:'物質豐裕指數',data:[20,40,68,Math.round(70+aMul*18)],borderColor:'#34f5c5',backgroundColor:grad(ctxT,'rgba(52,245,197,.25)','rgba(52,245,197,0)'),borderWidth:2.5,fill:true,tension:.4,pointRadius:3},
+      {label:'分配／意義張力',data:tBase.map(v=>Math.round(v*aMul)),borderColor:'#ff5d7a',backgroundColor:'transparent',borderWidth:2.5,borderDash:[5,4],tension:.4,pointRadius:3}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'top',labels:{boxWidth:10,usePointStyle:true,padding:14}}},
+      scales:{y:{grid,min:0,max:110,title:{display:true,text:'指數',color:'#5e6a8c'}},x:{grid:gridX}}}
+  });
+
+  // firms revenue bar (static facts)
+  charts.firms=new Chart(document.getElementById('chFirms'),{
+    type:'bar',
+    data:{labels:['NVIDIA','台積電 TSMC','Broadcom 在手','SK海力士','ASML'],
+      datasets:[{label:'2026 營收／指標（十億美元）',data:[216,140,73,70,40],
+        backgroundColor:['#22e6ff','#3aa0ff','#7c6cf0','#a855f7','#ffb23e'],borderRadius:6,barThickness:34}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` $${c.parsed.y}B`}}},
+      scales:{y:{grid,title:{display:true,text:'十億美元',color:'#5e6a8c'}},x:{grid:{display:false}}}}
+  });
+
+  // value chain capture (changes by scenario)
+  charts.value=new Chart(document.getElementById('chValue'),{
+    type:'doughnut',
+    data:{labels:['算力／矽層','模型／平台層','應用層','實體層'],
+      datasets:[{data:d.valueChain,backgroundColor:['#22e6ff','#3aa0ff','#a855f7','#ffb23e'],borderColor:'#0a0e1a',borderWidth:3,hoverOffset:8}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'58%',
+      plugins:{legend:{position:'right',labels:{boxWidth:12,padding:14,usePointStyle:true}},
+        tooltip:{callbacks:{label:c=>` ${c.label}：${c.parsed}%`}}}}
+  });
+
+  // radar US vs CN
+  charts.radar=new Chart(document.getElementById('chRadar'),{
+    type:'radar',
+    data:{labels:['晶片設計','能源／電網','前沿模型','資本動能','製造規模'],
+      datasets:[
+        {label:'美國',data:d.radar.us,borderColor:'#22e6ff',backgroundColor:'rgba(34,230,255,.15)',borderWidth:2,pointBackgroundColor:'#22e6ff'},
+        {label:'中國',data:d.radar.cn,borderColor:'#ff5d7a',backgroundColor:'rgba(255,93,122,.15)',borderWidth:2,pointBackgroundColor:'#ff5d7a'}
+      ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'top',labels:{boxWidth:10,usePointStyle:true,padding:16}}},
+      scales:{r:{min:0,max:100,grid:{color:'rgba(120,160,255,.12)'},angleLines:{color:'rgba(120,160,255,.12)'},
+        pointLabels:{color:'#c3cdf0',font:{size:12}},ticks:{display:false,stepSize:25}}}}
+  });
+
+  // bubble: national positioning
+  charts.bubble=new Chart(document.getElementById('chBubble'),{
+    type:'bubble',
+    data:{datasets:[
+      {label:'🇺🇸 美國',data:[{x:78,y:88,r:26}],backgroundColor:'rgba(34,230,255,.55)'},
+      {label:'🇨🇳 中國',data:[{x:72,y:84,r:25}],backgroundColor:'rgba(255,93,122,.55)'},
+      {label:'🇹🇼 台灣',data:[{x:95,y:62,r:16}],backgroundColor:'rgba(58,160,255,.6)'},
+      {label:'🇰🇷 南韓',data:[{x:82,y:60,r:14}],backgroundColor:'rgba(168,85,247,.55)'},
+      {label:'🇦🇪 波灣',data:[{x:40,y:78,r:17}],backgroundColor:'rgba(255,178,62,.55)'},
+      {label:'🇯🇵 日本',data:[{x:74,y:52,r:13}],backgroundColor:'rgba(124,108,240,.55)'},
+      {label:'🇳🇱 荷蘭',data:[{x:90,y:48,r:11}],backgroundColor:'rgba(52,245,197,.5)'},
+      {label:'🇪🇺 歐盟',data:[{x:55,y:46,r:15}],backgroundColor:'rgba(147,160,196,.5)'}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'right',labels:{boxWidth:10,usePointStyle:true,padding:9,font:{size:11}}},
+        tooltip:{callbacks:{label:c=>` ${c.dataset.label}｜關鍵性 ${c.parsed.x}／動能 ${c.parsed.y}`}}},
+      scales:{x:{grid,min:30,max:100,title:{display:true,text:'供應鏈關鍵性 →',color:'#5e6a8c'}},
+        y:{grid,min:40,max:100,title:{display:true,text:'資本＋能源動能 →',color:'#5e6a8c'}}}}
+  });
+
+  // sandbox mini projection
+  charts.sand=new Chart(document.getElementById('chSand'),{
+    type:'line',
+    data:{labels:YEARS,datasets:[{label:'機器人部署',data:logistic(d.curveL,d.curveT0,d.curveK),
+      borderColor:'#22e6ff',backgroundColor:grad(document.getElementById('chSand').getContext('2d'),'rgba(34,230,255,.3)','rgba(34,230,255,0)'),borderWidth:2.5,fill:true,tension:.4,pointRadius:0}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{y:{grid,title:{display:true,text:'億台',color:'#5e6a8c'}},x:{grid:gridX}}}
+  });
+}
+
+/* ============================================================
+   RENDER bindings + timeline
+   ============================================================ */
+const TL=[
+  {era:'增強紀元',titles:'AI 副駕普及 · 認知放大',
+   desc:'前沿模型成為每位知識工作者的標配。AI 開始參與 AI 研究本身，程式開發率先被端到端自動化。',
+   tags:['認知層','白領增強','自我改進'],years:{optimistic:2026,base:2027,conservative:2028}},
+  {era:'代理紀元',titles:'AI 代理人接管工作流',
+   desc:'從「回答問題」到「完成任務」。自主代理人編隊執行多步驟工作，企業導入進入爆發期，AGI 門檻被跨越。',
+   tags:['AGI','自主代理','企業導入'],years:{optimistic:2027,base:2030,conservative:2034}},
+  {era:'具身紀元',titles:'人形機器人走進物理世界',
+   desc:'量產成本跌破 $2 萬，機器人從工廠擴散到倉儲、營建與農業。智慧第一次大規模擁有手與腳。',
+   tags:['具身智慧','量產拐點','藍領自動化'],years:{optimistic:2030,base:2034,conservative:2039}},
+  {era:'轉型紀元',titles:'豐裕與分配的十字路口',
+   desc:'例行工作大量被承接，商品服務通縮。UBI／全民紅利成為主流政策辯論，社會在紅利與焦慮間重新立法。',
+   tags:['後工作經濟','全民紅利','社會重組'],years:{optimistic:2036,base:2041,conservative:2046}},
+  {era:'共生紀元',titles:'後稀缺社會的曙光',
+   desc:'智慧與基本物質趨近免費。文明瓶頸從「生產」轉為「治理、能源與意義」；人類成為價值的設定者。',
+   tags:['後稀缺','文明相變','意義經濟'],years:{optimistic:2042,base:2048,conservative:2050}}
+];
+function renderTimeline(){
+  const d=DATA[current];
+  const el=document.getElementById('timelineList');
+  el.querySelectorAll('.tl-item').forEach(n=>n.remove());
+  TL.forEach(it=>{
+    const y=it.years[current];
+    const div=document.createElement('div');div.className='tl-item';
+    div.innerHTML=`<div class="tl-year">${y}<span class="era">${it.era}</span></div>
+      <div class="tl-body"><h4>${it.titles}</h4><p>${it.desc}</p>
+      <div class="tl-tags">${it.tags.map(t=>`<span>${t}</span>`).join('')}</div></div>`;
+    el.appendChild(div);
+  });
+}
+
+function setText(bind,val){document.querySelectorAll(`[data-bind="${bind}"]`).forEach(e=>{e.innerHTML=val;});}
+function render(){
+  const d=DATA[current];
+  document.documentElement.style.setProperty('--accent',d.color);
+  // ribbon + kpi
+  setText('agiYear',d.agiYear);
+  setText('robots2050',`${fmt(d.robots2050)}<small> 億台</small>`);
+  setText('robots2050b',`${fmt(d.robots2050)} <small>億台</small>`);
+  setText('market2050',`$${fmt(d.market2050)}<small> 兆</small>`);
+  setText('autoHours2050',`${d.autoHours2050}<small>%</small>`);
+  setText('gdp',`+$${d.gdp} <small>兆</small>`);
+  setText('jobs',`+${d.jobs} <small>百萬</small>`);
+  setText('agiTrend',d.agiTrend);
+  setText('robTrend',d.robTrend);
+  setText('gdpTrend',d.gdpTrend);
+  setText('jobTrend',d.jobTrend);
+  setText('mixHuman',d.mix.human+'%');
+  setText('mixAgent',d.mix.agent+'%');
+  setText('mixRobot',d.mix.robot+'%');
+  document.getElementById('scenName').textContent=d.label;
+  document.getElementById('scenDesc').textContent=d.desc;
+  // accent on kpi top bars already via --accent
+  renderTimeline();
+  updateCharts();
+}
+function updateCharts(){
+  const d=DATA[current];
+  // cap
+  charts.cap.data.datasets[0].data=d.capAI;
+  charts.cap.data.datasets[1].data=d.capRobot;
+  charts.cap.update();
+  // mix
+  charts.mix.data.datasets[0].data=[d.mix.human,d.mix.agent,d.mix.robot];
+  charts.mix.update();
+  // sector
+  charts.sector.data.datasets[0].data=d.sectors;
+  charts.sector.data.datasets[0].backgroundColor=d.sectors.map(v=>v>70?'#22e6ff':v>50?'#3aa0ff':'#7c6cf0');
+  charts.sector.update();
+  // shift
+  charts.shift.data.datasets[0].data=d.shiftHuman;
+  charts.shift.update();
+  // tension
+  const aMul=d.autoHours2050/40;
+  charts.tension.data.datasets[0].data=[20,40,68,Math.round(70+aMul*18)];
+  charts.tension.data.datasets[1].data=[20,38,55,60].map(v=>Math.round(v*aMul));
+  charts.tension.update();
+  // value
+  charts.value.data.datasets[0].data=d.valueChain;
+  charts.value.update();
+  // radar
+  charts.radar.data.datasets[0].data=d.radar.us;
+  charts.radar.data.datasets[1].data=d.radar.cn;
+  charts.radar.update();
+  // curve highlight: emphasize active
+  const map={optimistic:0,base:1,conservative:2};
+  charts.curve.data.datasets.forEach((ds,i)=>{ds.borderWidth=(i===map[current])?4:1.5;ds.borderColor=(i===map[current])?ds.borderColor:hexA(['#34f5c5','#3aa0ff','#ffb23e'][i],.35);});
+  charts.curve.update();
+  // sandbox baseline follows scenario unless user dragged
+  if(!sbDirty) syncSandboxToScenario();
+}
+function hexA(h,a){const n=parseInt(h.slice(1),16);return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;}
+
+/* ============================================================
+   SCENARIO SWITCH
+   ============================================================ */
+document.getElementById('switch').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  current=b.dataset.s;
+  document.querySelectorAll('#switch button').forEach(x=>x.classList.toggle('active',x===b));
+  sbDirty=false;
+  render();
+});
+
+/* ============================================================
+   SANDBOX engine
+   ============================================================ */
+let sbDirty=false;
+const S={agi:document.getElementById('s-agi'),rob:document.getElementById('s-rob'),auto:document.getElementById('s-auto'),pol:document.getElementById('s-pol')};
+function pol2txt(v){return v<25?'放任':v<50?'溫和':v<75?'積極':'強力';}
+function syncSandboxToScenario(){
+  const d=DATA[current];
+  S.agi.value=d.agiYear; S.rob.value=Math.round((d.curveL/1.05)*100);
+  S.auto.value=d.autoHours2050; S.pol.value=50;
+  computeSandbox();
+}
+function computeSandbox(){
+  const agi=+S.agi.value, robMul=+S.rob.value/100, auto=+S.auto.value, pol=+S.pol.value;
+  // labels
+  document.getElementById('v-agi').textContent=agi;
+  document.getElementById('v-rob').textContent=robMul.toFixed(2)+'×';
+  document.getElementById('v-auto').textContent=auto+'%';
+  document.getElementById('v-pol').textContent=pol2txt(pol);
+  [['s-agi',(agi-2026)/14],['s-rob',(+S.rob.value-40)/160],['s-auto',(auto-15)/50],['s-pol',pol/100]]
+    .forEach(([id,p])=>document.getElementById(id).style.setProperty('--p',(p*100)+'%'));
+  // derived model
+  const speed=(2034-agi)/8;                       // -1..1 earlier=faster
+  const robots=Math.max(1.5,Math.min(18, (4.5+ (auto-26)*0.32) * robMul * (1+speed*0.25)));
+  const market=Math.max(1.2,Math.min(8.5, robots*0.46 ));
+  const gdp=Math.round(Math.max(4,Math.min(26, 6 + (auto-26)*0.55 + speed*5 )));
+  const grossDisplace=auto*3.0;                   // millions scaled
+  const netJobs=Math.round( (155-grossDisplace) + pol*0.7 + speed*15 ); // policy & growth create jobs
+  // outputs
+  document.getElementById('o-market').textContent='$'+market.toFixed(1)+'兆';
+  document.getElementById('o-gdp').textContent='+$'+gdp+'兆';
+  document.getElementById('o-robots').textContent=robots.toFixed(1)+'億';
+  document.getElementById('o-jobs').textContent=(netJobs>=0?'+':'')+netJobs+'百萬';
+  // verdict logic
+  const abundance=(robots/18)*60 + (auto/65)*40;  // 0..100
+  const tension=Math.max(0,Math.min(100, abundance*0.9 - pol*0.6 ));
+  let v,c,dsc;
+  if(tension>62){v='動盪轉型';c='#ff5d7a';dsc='豐裕快速到來但分配嚴重落後，社會張力高漲，須以強力政策化解。';}
+  else if(abundance>62 && tension<=62){v='豐裕躍進';c='#34f5c5';dsc='技術紅利豐厚且分配大致跟上，文明加速邁向後稀缺生態。';}
+  else if(abundance>=38){v='有序重組';c='#3aa0ff';dsc='紅利與調適同步，文明在二十餘年內完成深刻但可控的轉型。';}
+  else{v='漸進演化';c='#ffb23e';dsc='變革溫和而集中，社會穩定，但紅利集中、不平等風險須留意。';}
+  const ov=document.getElementById('o-verdict');ov.textContent=v;ov.style.color=c;
+  document.getElementById('o-desc').textContent=dsc;
+  // mini chart
+  const robY=2034-Math.round(speed*4);
+  charts.sand.data.datasets[0].data=logistic(robots, robY, .30+robMul*0.10);
+  charts.sand.data.datasets[0].borderColor=c;
+  charts.sand.update();
+}
+Object.values(S).forEach(inp=>inp.addEventListener('input',()=>{sbDirty=true;computeSandbox();}));
+document.getElementById('sbReset').addEventListener('click',()=>{sbDirty=false;syncSandboxToScenario();});
+
+/* ============================================================
+   BACKGROUND neural canvas
+   ============================================================ */
+(function(){
+  const c=document.getElementById('bgfx'),x=c.getContext('2d');let w,h,pts;
+  function rs(){w=c.width=innerWidth;h=c.height=innerHeight;const n=Math.min(70,Math.floor(w/22));
+    pts=Array.from({length:n},()=>({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25}));}
+  rs();addEventListener('resize',rs);
+  function loop(){x.clearRect(0,0,w,h);
+    for(const p of pts){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>w)p.vx*=-1;if(p.y<0||p.y>h)p.vy*=-1;}
+    for(let i=0;i<pts.length;i++){for(let j=i+1;j<pts.length;j++){
+      const a=pts[i],b=pts[j],dx=a.x-b.x,dy=a.y-b.y,dd=dx*dx+dy*dy;
+      if(dd<16000){const o=(1-dd/16000)*.18;x.strokeStyle=`rgba(60,140,255,${o})`;x.lineWidth=1;
+        x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke();}}}
+    for(const p of pts){x.fillStyle='rgba(120,200,255,.5)';x.beginPath();x.arc(p.x,p.y,1.3,0,7);x.fill();}
+    requestAnimationFrame(loop);}
+  loop();
+})();
+
+/* reveal on scroll */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+/* INIT */
+buildCharts();
+render();
+syncSandboxToScenario();
+</script>
+</body>
+</html>
